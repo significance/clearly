@@ -317,6 +317,9 @@ public enum PreviewCSS {
         case "sfMono":
             bodyFontFamily = "\"SF Mono\", SFMono-Regular, Menlo, monospace"
             headingFontFamily = "\"SF Mono\", SFMono-Regular, Menlo, monospace"
+        case PreviewFonts.libreBaskerville:
+            bodyFontFamily = PreviewFonts.fontStack(for: fontFamily)
+            headingFontFamily = PreviewFonts.fontStack(for: fontFamily)
         default:
             bodyFontFamily = "system-ui, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Helvetica Neue\", sans-serif"
             headingFontFamily = "system-ui, -apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"Helvetica Neue\", sans-serif"
@@ -378,7 +381,11 @@ public enum PreviewCSS {
         }
         """ : ""
 
+        let fontFaces = PreviewFonts.fontFaceCSS(for: fontFamily)
+
         return """
+        \(fontFaces)
+
         \(baseRoot)
 
         \(darkBlock)

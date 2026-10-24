@@ -87,6 +87,7 @@ struct SettingsView: View {
             Picker("Preview Font", selection: $previewFontFamily) {
                 Text("San Francisco").tag("sanFrancisco")
                 Text("New York").tag("newYork")
+                Text("Libre Baskerville").tag("libreBaskerville")
                 Text("SF Mono").tag("sfMono")
             }
 

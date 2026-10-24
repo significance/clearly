@@ -401,7 +401,7 @@ final class ClearlyAppDelegate: NSObject, NSApplicationDelegate {
         guard !viewMenu.items.contains(where: { $0.title == "Preview Font" }) else { return }
 
         let fontSubmenu = NSMenu(title: "Preview Font")
-        for (title, value) in [("San Francisco", "sanFrancisco"), ("New York", "newYork"), ("SF Mono", "sfMono")] {
+        for (title, value) in [("San Francisco", "sanFrancisco"), ("New York", "newYork"), ("Libre Baskerville", "libreBaskerville"), ("SF Mono", "sfMono")] {
             let item = NSMenuItem(title: title, action: #selector(setPreviewFontAction(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = value

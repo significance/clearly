@@ -150,6 +150,7 @@ Wraps platform text views (`NSTextView` on Mac, `UITextView` on iOS) via `NSView
 | [cmark-gfm](https://github.com/brokenhandsio/cmark-gfm) | GitHub Flavored Markdown → HTML |
 | [Sparkle](https://sparkle-project.org) | Auto-updates (direct distribution only) |
 | [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) | Global hotkey for the menu-bar scratchpad |
+| [Libre Baskerville](https://github.com/impallari/Libre-Baskerville) | Bundled serif preview font (SIL OFL 1.1, `Shared/Resources/fonts/`) |
 
 ### Key Decisions
 

@@ -146,4 +146,65 @@ final class PreviewCSSTests: XCTestCase {
     // Asset-catalog resolution is exercised at runtime by the app + QuickLook targets; `swift test`
     // from the CLI can't load Bundle.module xcassets, so we verify asset-driven hex resolution via
     // Xcode test bundles rather than SPM.
+
+    // MARK: - Bundled fonts
+
+    func testLibreBaskervilleEmitsFontFacesAndSerifStack() {
+        let css = PreviewCSS.css(fontFamily: PreviewFonts.libreBaskerville)
+        XCTAssertEqual(css.components(separatedBy: "@font-face").count - 1, 2, "expected roman + italic @font-face rules")
+        XCTAssertTrue(css.contains("font-family: \"Libre Baskerville\";"))
+        XCTAssertTrue(css.contains("font-weight: 400 700;"))
+        XCTAssertTrue(css.contains("font-style: italic;"))
+        XCTAssertTrue(css.contains("LibreBaskerville-VariableFont_wght.ttf"))
+        XCTAssertTrue(css.contains("LibreBaskerville-Italic-VariableFont_wght.ttf"))
+        XCTAssertTrue(css.contains("font-family: \"Libre Baskerville\", Baskerville, \"Iowan Old Style\", Georgia, serif;"))
+    }
+
+    func testLibreBaskervilleFontFacesPrecedeRootBlock() {
+        let css = PreviewCSS.css(fontFamily: PreviewFonts.libreBaskerville)
+        guard let fontFace = css.range(of: "@font-face"), let root = css.range(of: ":root {") else {
+            return XCTFail("missing @font-face or :root")
+        }
+        XCTAssertLessThan(fontFace.lowerBound, root.lowerBound)
+    }
+
+    func testLibreBaskervilleFontFacesSurviveExport() {
+        let css = PreviewCSS.css(fontFamily: PreviewFonts.libreBaskerville, forExport: true)
+        XCTAssertTrue(css.contains("@font-face"), "PDF export must embed the bundled font")
+    }
+
+    func testSystemFamiliesEmitNoFontFaces() {
+        for family in ["sanFrancisco", "newYork", "sfMono"] {
+            XCTAssertFalse(PreviewCSS.css(fontFamily: family).contains("@font-face"), family)
+            XCTAssertEqual(PreviewFonts.fontFaceCSS(for: family), "")
+        }
+    }
+
+    func testFontSourceFallsBackToRelativePathOutsideAppBundle() {
+        // The test runner's main bundle has no fonts folder, so the KaTeX-style relative path is used.
+        XCTAssertEqual(PreviewFonts.fontSource(named: "LibreBaskerville-VariableFont_wght.ttf"), "fonts/LibreBaskerville-VariableFont_wght.ttf")
+    }
+
+    func testFontSourceUsesAbsoluteFileURLInsideBundle() throws {
+        // A bare directory acts as a bundle whose resources sit at its root, mirroring
+        // Contents/Resources/fonts/ in the app.
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let fonts = dir.appendingPathComponent("fonts")
+        try FileManager.default.createDirectory(at: fonts, withIntermediateDirectories: true)
+        let roman = fonts.appendingPathComponent("LibreBaskerville-VariableFont_wght.ttf")
+        let italic = fonts.appendingPathComponent("LibreBaskerville-Italic-VariableFont_wght.ttf")
+        try Data([0x00]).write(to: roman)
+        try Data([0x00]).write(to: italic)
+        let bundle = try XCTUnwrap(Bundle(url: dir))
+
+        let source = PreviewFonts.fontSource(named: "LibreBaskerville-VariableFont_wght.ttf", bundle: bundle)
+        XCTAssertTrue(source.hasPrefix("file://"), source)
+        XCTAssertEqual(URL(string: source)?.standardizedFileURL.path, roman.standardizedFileURL.path)
+
+        let css = PreviewFonts.fontFaceCSS(for: PreviewFonts.libreBaskerville, bundle: bundle)
+        XCTAssertTrue(css.contains("src: url(\"\(source)\")"), "roman face references the bundled file")
+        XCTAssertTrue(css.contains(italic.lastPathComponent), "italic face references the bundled file")
+        XCTAssertFalse(css.contains("url(\"fonts/"), "no relative fallback when the bundle has the fonts")
+    }
 }
