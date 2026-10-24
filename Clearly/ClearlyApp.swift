@@ -251,7 +251,12 @@ final class ClearlyAppDelegate: NSObject, NSApplicationDelegate {
         // once the doc registers, so the next Cmd+Q hits the normal path.
         if isDocumentPanelPresented {
             DiagnosticLog.log("appShouldTerminate: panel-in-flight with new doc, cancel without closing")
-            NSApp.setActivationPolicy(.accessory)
+            // Don't force `.accessory` here: the flag can be stale when the
+            // documents were opened without ever becoming main (Finder or
+            // `open -g` into a menubar-mode app), and forcing it would hide
+            // the Dock icon and grey out "Enter Full Screen" under windows
+            // that are still open. Recompute from the real window state.
+            updateActivationPolicy()
             return .terminateCancel
         }
         NSDocumentController.shared.closeAllDocuments(
@@ -289,6 +294,19 @@ final class ClearlyAppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.removeObserver(observer)
         }
         observers.removeAll()
+    }
+
+    /// Self-heal the activation policy before every event. AppKit decides
+    /// whether "Enter Full Screen" is enabled, and whether the Dock icon
+    /// shows, from the policy at the moment it looks. The `didBecomeMain` /
+    /// `willClose` observers miss windows that appear without becoming main
+    /// (opened from Finder or `open -g` while in menubar mode), and several
+    /// terminate paths drop to `.accessory` directly; either leaves the app
+    /// stuck in menubar mode with document windows open. A window scan is
+    /// cheap, and `updateActivationPolicy` only calls `setActivationPolicy`
+    /// when the policy actually differs.
+    func applicationWillUpdate(_ notification: Notification) {
+        updateActivationPolicy()
     }
 
     /// Drives the Dock icon. Called from window observers and from the
