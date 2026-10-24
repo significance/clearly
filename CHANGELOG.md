@@ -4,6 +4,7 @@
 - Dark mode now uses a true black background in the editor and preview
 - Export documents as Rich Text from the File menu
 - Libre Baskerville is now available as a Preview font, in Settings and under View → Preview Font
+- Export PDF now suggests the document's name instead of "Untitled.pdf"
 
 ## [3.3.0] - 2026-08-23
 - Dropping markdown files on a document now opens them as window tabs instead of pasting the file path

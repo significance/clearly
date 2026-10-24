@@ -16,7 +16,8 @@ final class PDFExporter: NSObject, WKNavigationDelegate {
     func exportPDF(markdown: String, fontSize: CGFloat, fontFamily: String = "sanFrancisco", fileURL: URL? = nil) {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.pdf]
-        panel.nameFieldStringValue = "Untitled.pdf"
+        let baseName = fileURL?.deletingPathExtension().lastPathComponent ?? "Untitled"
+        panel.nameFieldStringValue = "\(baseName).pdf"
         guard panel.runModal() == .OK, let url = panel.url else { return }
 
         PDFExporter.current = self
