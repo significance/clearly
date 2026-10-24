@@ -229,7 +229,7 @@ public struct PreviewPalette: Sendable {
     public static let dark = PreviewPalette(
         text: "#F5F5F7",
         headingSecondary: "rgba(245, 245, 247, 0.55)",
-        background: "#323236",
+        background: "#000000",
         link: "#0A84FF",
         wiki: "#5ABF80",
         wikiBorder: "rgba(90, 191, 128, 0.3)",

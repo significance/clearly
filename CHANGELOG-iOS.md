@@ -3,6 +3,7 @@
 iOS release notes. Mac release notes live in `CHANGELOG.md`.
 
 ## [Unreleased]
+- Dark mode now uses a true black background in the editor and preview
 
 ## [2.1.0] - 2026-05-17
 - Open documents auto-reload when they're changed by another app

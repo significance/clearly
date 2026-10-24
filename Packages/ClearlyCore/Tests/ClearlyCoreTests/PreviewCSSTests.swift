@@ -75,7 +75,7 @@ final class PreviewCSSTests: XCTestCase {
     func testDarkPaletteValuesMatchPreTokenizationPreview() {
         let p = PreviewPalette.dark
         XCTAssertEqual(p.text, "#F5F5F7")
-        XCTAssertEqual(p.background, "#323236")
+        XCTAssertEqual(p.background, "#000000")
         XCTAssertEqual(p.link, "#0A84FF")
         XCTAssertEqual(p.wiki, "#5ABF80")
         XCTAssertEqual(p.popoverBg, "#2C2C2E")
